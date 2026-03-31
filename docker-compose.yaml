@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: workshop
+    ports:
+      - "5432:5432"
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    volumes:
+      - ./auth-service:/app
+      - /app/node_modules
+  workshop-service:
+    build: ./workshop-service
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./workshop-service:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+
+  gateway-service:
+    build: ./gateway-service
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./gateway-service:/app
+      - /app/node_modules
+    depends_on:
+      - auth-service
+      - workshop-service
+    environment:
+      - PORT=3000
+      - JWT_SECRET=supersecret
+      - WORKSHOP_SERVICE_URL=http://workshop-service:3002
+      - AUTH_SERVICE_URL=http://auth-service:3001

@@ -235,12 +235,3 @@ Authorization: Bearer <token>
 * Gateway handles routing only
 
 ---
-
-## Next Steps
-
-* Replace mock login with Prisma DB
-* Implement client + vehicle modules
-* Add job card workflow
-* Introduce billing service
-
----
